@@ -1,6 +1,6 @@
 # 四川大学综合教务系统助手后端
 
-## Description
+## 简介
 
 四川大学综合教务系统助手后端，基于 [Nest.js](https://github.com/nestjs/nest) 框架开发。
 
