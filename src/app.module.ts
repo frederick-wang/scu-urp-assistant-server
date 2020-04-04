@@ -21,7 +21,9 @@ import { InfoModule } from './info/info.module'
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: configService.get<string>('DB_SYNCHRONIZE').toLowerCase() == 'true'
+        synchronize:
+          configService.get<string>('DB_SYNCHRONIZE').toLowerCase() == 'true',
+        charset: 'utf8mb4'
       }),
       inject: [ConfigService]
     }),
