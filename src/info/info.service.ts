@@ -2,6 +2,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { BachelorDegree, TrainingScheme, ScuUietp } from './info.entity'
 import { Repository, Like } from 'typeorm'
+import { formatScuUietp } from './utils'
 
 @Injectable()
 export class InfoService implements OnModuleInit {
@@ -19,7 +20,6 @@ export class InfoService implements OnModuleInit {
   }
 
   findAllBachelorDegrees(): Promise<BachelorDegree[]> {
-    console.log('123')
     return this.bachelorDegreeRepo.find()
   }
 
@@ -29,5 +29,39 @@ export class InfoService implements OnModuleInit {
       where: [{ majorName: Like(`%${q}%`) }, { majorCode: Like(`%${q}%`) }],
       select: ['majorCode', 'majorName', 'category', 'approvalNumber', 'remark']
     })
+  }
+
+  async findAllScuUietps() {
+    return formatScuUietp(await this.scuUiepRepo.find())
+  }
+
+  async findScuUietp(q: string) {
+    q = q.replace(/%/g, '').trim()
+    const result = await this.scuUiepRepo.find({
+      where: [
+        { projectName: Like(`%${q}%`) },
+        { schoolSupervisorName: Like(`%${q}%`) },
+        { projectLeaderName: Like(`%${q}%`) },
+        { projectLeaderCode: Like(`%${q}%`) },
+        { otherMemberInformation: Like(`%${q}%`) }
+      ],
+      select: [
+        'projectYear',
+        'collegeName',
+        'projectName',
+        'projectLeaderName',
+        'participantNumber',
+        'otherMemberInformation',
+        'schoolSupervisorName',
+        'projectLevel',
+        'applicationCategory',
+        'projectCategory'
+      ]
+    })
+    return {
+      query: q,
+      number: result.length,
+      list: formatScuUietp(result)
+    }
   }
 }

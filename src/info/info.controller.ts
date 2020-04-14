@@ -9,4 +9,9 @@ export class InfoController {
   getBachelorDegree(@Param('q') q: string) {
     return this.infoService.findBachelorDegree(q)
   }
+
+  @Get('scu_uietp/:q')
+  getScuUiep(@Param('q') q: string) {
+    return this.infoService.findScuUietp(q)
+  }
 }
