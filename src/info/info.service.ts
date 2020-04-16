@@ -19,20 +19,12 @@ export class InfoService implements OnModuleInit {
     console.log('onInfoModuleInit!')
   }
 
-  findAllBachelorDegrees(): Promise<BachelorDegree[]> {
-    return this.bachelorDegreeRepo.find()
-  }
-
   findBachelorDegree(q: string): Promise<BachelorDegree[]> {
     q = q.replace(/%/g, '').trim()
     return this.bachelorDegreeRepo.find({
       where: [{ majorName: Like(`%${q}%`) }, { majorCode: Like(`%${q}%`) }],
       select: ['majorCode', 'majorName', 'category', 'approvalNumber', 'remark']
     })
-  }
-
-  async findAllScuUietps() {
-    return formatScuUietp(await this.scuUiepRepo.find())
   }
 
   async findScuUietp(q: string) {
