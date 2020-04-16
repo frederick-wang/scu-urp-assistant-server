@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 export class ScuUietp {
@@ -97,22 +97,7 @@ export class ScuUietp {
   })
   grant: number
 }
-@Entity()
-export class TrainingScheme {
-  @PrimaryColumn()
-  majorId: number
 
-  @Column({
-    nullable: true
-  })
-  majorName: string
-
-  @Column()
-  grade: string
-
-  @Column()
-  department: string
-}
 
 @Entity()
 export class BachelorDegree {

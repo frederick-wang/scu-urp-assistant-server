@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BachelorDegree, TrainingScheme, ScuUietp } from './info.entity'
+import { BachelorDegree, ScuUietp } from './info.entity'
 import { Repository, Like } from 'typeorm'
 import { formatScuUietp } from './utils'
 
@@ -9,8 +9,6 @@ export class InfoService implements OnModuleInit {
   constructor(
     @InjectRepository(BachelorDegree)
     private bachelorDegreeRepo: Repository<BachelorDegree>,
-    @InjectRepository(TrainingScheme)
-    private trainingSchemeRepo: Repository<TrainingScheme>,
     @InjectRepository(ScuUietp)
     private scuUiepRepo: Repository<ScuUietp>
   ) {}
