@@ -18,7 +18,7 @@ export class InfoService implements OnModuleInit {
   }
 
   findBachelorDegree(q: string): Promise<BachelorDegree[]> {
-    q = q.replace(/%/g, '').trim()
+    q = q.replace(/%/g, '\\%').trim()
     return this.bachelorDegreeRepo.find({
       where: [{ majorName: Like(`%${q}%`) }, { majorCode: Like(`%${q}%`) }],
       select: ['majorCode', 'majorName', 'category', 'approvalNumber', 'remark']
@@ -26,7 +26,7 @@ export class InfoService implements OnModuleInit {
   }
 
   async findScuUietp(q: string) {
-    q = q.replace(/%/g, '').trim()
+    q = q.replace(/%/g, '\\%').trim()
     const result = await this.scuUiepRepo.find({
       where: [
         { projectName: Like(`%${q}%`) },

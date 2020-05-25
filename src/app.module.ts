@@ -4,7 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { InfoModule } from './info/info.module'
-import { StudentModule } from './student/student.module';
+import { StudentModule } from './student/student.module'
+import { UserModule } from './user/user.module'
+
+import { ErrorsInterceptor } from './core/interceptors/errors.interceptor'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 
 @Module({
   imports: [
@@ -29,9 +33,16 @@ import { StudentModule } from './student/student.module';
       inject: [ConfigService]
     }),
     InfoModule,
-    StudentModule
+    StudentModule,
+    UserModule
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [
+    {
+      provide: APP_INTERCEPTOR, // 全局拦截器，这里使用全局异常拦截器改写异常消息结构
+      useClass: ErrorsInterceptor
+    },
+    AppService
+  ]
 })
 export class AppModule {}
