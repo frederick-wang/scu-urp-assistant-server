@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { BachelorDegree, ScuUietp } from './info.entity'
 import { Repository, Like } from 'typeorm'
 import { formatScuUietp } from './utils'
+import { ScuUietpInfo } from './info.interface'
 
 @Injectable()
 export class InfoService implements OnModuleInit {
@@ -13,7 +14,7 @@ export class InfoService implements OnModuleInit {
     private scuUiepRepo: Repository<ScuUietp>
   ) {}
 
-  onModuleInit() {
+  onModuleInit(): void {
     console.log('onInfoModuleInit!')
   }
 
@@ -25,7 +26,13 @@ export class InfoService implements OnModuleInit {
     })
   }
 
-  async findScuUietp(q: string) {
+  async findScuUietp(
+    q: string
+  ): Promise<{
+    query: string
+    number: number
+    list: ScuUietpInfo[]
+  }> {
     q = q.replace(/%/g, '\\%').trim()
     const result = await this.scuUiepRepo.find({
       where: [

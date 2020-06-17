@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import TrainingScheme from './entities/TrainingScheme.entity'
 import { Repository, Not, IsNull } from 'typeorm'
@@ -10,11 +10,11 @@ export class StudentService {
     private trainingSchemeRepo: Repository<TrainingScheme>
   ) {}
 
-  onModuleInit() {
+  onModuleInit(): void {
     console.log('onStudentModuleInit!')
   }
 
-  async findAllTrainingSchemes() {
+  async findAllTrainingSchemes(): Promise<TrainingScheme[]> {
     return this.trainingSchemeRepo.find({
       select: ['majorId', 'grade', 'department', 'majorName'],
       where: [{ majorName: Not(IsNull()), department: Not(IsNull()) }]

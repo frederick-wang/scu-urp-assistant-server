@@ -4,6 +4,7 @@ import { Roles } from 'src/common/decorators/roles.decorator'
 import { UserRoleType } from 'src/user/user.interface'
 import { AuthGuard } from '@nestjs/passport'
 import { RolesGuard } from 'src/core/guards/roles.guard'
+import TrainingScheme from './entities/TrainingScheme.entity'
 
 @Controller('student')
 export class StudentController {
@@ -12,7 +13,7 @@ export class StudentController {
   @Get('training_scheme')
   @Roles(UserRoleType.ADMIN, UserRoleType.NORMAL_USER)
   @UseGuards(AuthGuard(), RolesGuard)
-  getAllTraningSchemes() {
+  getAllTraningSchemes(): Promise<TrainingScheme[]> {
     return this.studentService.findAllTrainingSchemes()
   }
 }

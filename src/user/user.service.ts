@@ -3,6 +3,11 @@ import { User, ClientType, UserRoleType, UserPO } from './user.interface'
 
 @Injectable()
 export class UserService {
+
+  onModuleInit(): void {
+    console.log('onUserModuleInit!')
+  }
+
   /**
    * 用户登录
    *
