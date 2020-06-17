@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import TrainingScheme from './entities/TrainingScheme.entity'
+import { TrainingScheme } from './entities/TrainingScheme.entity'
 import { Repository, Not, IsNull } from 'typeorm'
 
 @Injectable()

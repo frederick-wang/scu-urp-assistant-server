@@ -1,23 +1,22 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
-export class TrainingScheme {
+export class BachelorDegree {
   @PrimaryGeneratedColumn()
   id: number
 
   @Column()
-  majorId: number
+  majorCode: string
 
-  @Column({
-    nullable: true
-  })
+  @Column()
   majorName: string
 
   @Column()
-  grade: string
+  category: string
 
-  @Column({
-    nullable: true
-  })
-  department: string
+  @Column()
+  approvalNumber: string
+
+  @Column()
+  remark: string
 }

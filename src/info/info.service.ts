@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { BachelorDegree, ScuUietp } from './info.entity'
+import { BachelorDegree } from './entities/BachelorDegree.entity'
+import { ScuUietp } from './entities/ScuUietp.entity'
 import { Repository, Like } from 'typeorm'
 import { formatScuUietp } from './utils'
 import { ScuUietpInfo } from './info.interface'

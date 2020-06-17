@@ -1,4 +1,4 @@
-import { ScuUietp } from './info.entity'
+import { ScuUietp } from './entities/ScuUietp.entity'
 import { map, compose, descend, prop, sort } from 'ramda'
 import { ScuUietpInfo } from './info.interface'
 
