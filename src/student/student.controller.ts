@@ -1,10 +1,10 @@
 import { Controller, Get, UseGuards } from '@nestjs/common'
 import { StudentService } from './student.service'
 import { Roles } from 'src/common/decorators/roles.decorator'
-import { UserRoleType } from 'src/user/user.interface'
 import { AuthGuard } from '@nestjs/passport'
 import { RolesGuard } from 'src/core/guards/roles.guard'
 import { TrainingScheme } from './entities/TrainingScheme.entity'
+import { UserRoleType } from 'src/user/entities/User.entity'
 
 @Controller('student')
 export class StudentController {

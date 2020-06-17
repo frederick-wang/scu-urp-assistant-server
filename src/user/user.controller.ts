@@ -6,8 +6,9 @@ import { Result } from '../common/interfaces/result.interface'
 import { AuthService } from '../core/auth/auth.service'
 import { RolesGuard } from '../core/guards/roles.guard'
 import { UserService } from './user.service'
-import { JWTData, UserRoleType, User } from './user.interface'
+import { JWTData, ActiveUser } from './user.interface'
 import { Usr } from './user.decorator'
+import { UserRoleType } from './entities/User.entity'
 
 type LoginDTO = JWTData
 
@@ -40,7 +41,7 @@ export class UserController {
   @Get('info')
   @Roles(UserRoleType.ADMIN, UserRoleType.NORMAL_USER)
   @UseGuards(AuthGuard(), RolesGuard)
-  async getInfo(@Usr() user: User): Promise<Result> {
+  async getInfo(@Usr() user: ActiveUser): Promise<Result> {
     return {
       data: { ...user }
     }

@@ -1,26 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
-export const enum UserRoleType {
-  ADMIN = 'admin',
-  NORMAL_USER = 'normal_user'
-}
-
 @Entity()
-export class User {
+export class ChatAdmin {
   @PrimaryGeneratedColumn()
   id: number
-
-  @Column({
-    type: 'text',
-    nullable: false
-  })
-  role: string
-
-  @Column({
-    type: 'text',
-    nullable: false
-  })
-  userId: string
 
   @Column({
     type: 'int',

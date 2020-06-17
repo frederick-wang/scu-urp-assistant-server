@@ -1,11 +1,11 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common'
 import { InfoService } from './info.service'
 import { Roles } from 'src/common/decorators/roles.decorator'
-import { UserRoleType } from 'src/user/user.interface'
 import { AuthGuard } from '@nestjs/passport'
 import { RolesGuard } from 'src/core/guards/roles.guard'
 import { BachelorDegree } from './entities/BachelorDegree.entity'
 import { ScuUietpInfo } from './info.interface'
+import { UserRoleType } from 'src/user/entities/User.entity'
 
 @Controller('info')
 export class InfoController {
