@@ -23,8 +23,113 @@ export class UserService {
     console.log('onUserModuleInit!')
   }
 
-  private async getChatAdmin(): Promise<ChatAdmin> {
+  private async chatUserLogin(
+    username: string,
+    password: string
+  ): Promise<{
+    chatUserId: number
+    chatAccessToken: string
+    chatRefreshToken: string
+    chatExpiresIn: number
+  }> {
     const CHAT_API_PATH = this.configService.get<string>('CHAT_API_PATH')
+    const url = `${CHAT_API_PATH}/login`
+    const {
+      data: { data }
+    } = await this.httpService
+      .post(url, {
+        data: {
+          attributes: {
+            username,
+            password
+          }
+        }
+      })
+      .toPromise()
+    const chatUserId = Number(data.id)
+    const chatAccessToken = data.attributes.access_token
+    const chatRefreshToken = data.attributes.refresh_token
+    const chatExpiresIn = data.attributes.expires_in
+    return {
+      chatUserId,
+      chatAccessToken,
+      chatRefreshToken,
+      chatExpiresIn
+    }
+  }
+
+  private async chatUserRegister(
+    username: string,
+    password: string
+  ): Promise<{
+    chatUserId: number
+    chatAccessToken: string
+    chatRefreshToken: string
+    chatExpiresIn: number
+  }> {
+    const CHAT_API_PATH = this.configService.get<string>('CHAT_API_PATH')
+    const url = `${CHAT_API_PATH}/register`
+    const chatAdmin = await this.getChatAdmin()
+    const authorization = `Bearer ${chatAdmin.chatAccessToken}`
+    const {
+      data: { data }
+    } = await this.httpService
+      .post(
+        url,
+        {
+          data: {
+            type: 'users',
+            attributes: {
+              username,
+              password,
+              register_reason: 'SCU URP Assistant'
+            }
+          }
+        },
+        {
+          headers: {
+            Authorization: authorization
+          }
+        }
+      )
+      .toPromise()
+    const chatUserId = Number(data.id)
+    const chatAccessToken = data.attributes.access_token
+    const chatRefreshToken = data.attributes.refresh_token
+    const chatExpiresIn = data.attributes.expires_in
+    return {
+      chatUserId,
+      chatAccessToken,
+      chatRefreshToken,
+      chatExpiresIn
+    }
+  }
+
+  private async chatUserChangeGroup(userid: number): Promise<void> {
+    const CHAT_API_PATH = this.configService.get<string>('CHAT_API_PATH')
+    const url = `${CHAT_API_PATH}/users/${userid}`
+    const chatAdmin = await this.getChatAdmin()
+    const authorization = `Bearer ${chatAdmin.chatAccessToken}`
+    await this.httpService
+      .patch(
+        url,
+        {
+          data: {
+            attributes: {
+              groupId: 11
+            }
+          }
+        },
+        {
+          headers: {
+            Authorization: authorization
+          }
+        }
+      )
+      .toPromise()
+  }
+
+  private async getChatAdmin(): Promise<ChatAdmin> {
     const chatUserName = this.configService.get<string>('CHAT_ADMIN_USERNAME')
     const chatUserPassword = this.configService.get<string>(
       'CHAT_ADMIN_PASSWORD'
@@ -35,24 +140,13 @@ export class UserService {
       }
     })
     if (!chatAdmin) {
-      const url = `${CHAT_API_PATH}/login`
       const chatLastLoginTime = new Date()
       const {
-        data: { data }
-      } = await this.httpService
-        .post(url, {
-          data: {
-            attributes: {
-              username: chatUserName,
-              password: chatUserPassword
-            }
-          }
-        })
-        .toPromise()
-      const chatUserId = Number(data.id)
-      const chatAccessToken = data.attributes.access_token
-      const chatRefreshToken = data.attributes.refresh_token
-      const chatExpiresIn = data.attributes.expires_in
+        chatUserId,
+        chatAccessToken,
+        chatRefreshToken,
+        chatExpiresIn
+      } = await this.chatUserLogin(chatUserName, chatUserPassword)
       chatAdmin = await this.chatAdminRepo.save({
         chatUserId,
         chatUserName,
@@ -68,41 +162,27 @@ export class UserService {
     )
     const isExpired = new Date().getTime() >= expiresTime.getTime()
     if (isExpired) {
-      const url = `${CHAT_API_PATH}/refresh-token`
       chatAdmin.chatLastLoginTime = new Date()
       const {
-        data: { data }
-      } = await this.httpService
-        .post(url, {
-          data: {
-            attributes: {
-              grant_type: 'refresh_token',
-              refresh_token: chatAdmin.chatRefreshToken,
-              client_id: chatAdmin.chatUserId
-            }
-          }
-        })
-        .toPromise()
-      chatAdmin.chatAccessToken = data.attributes.access_token
-      chatAdmin.chatRefreshToken = data.attributes.refresh_token
-      chatAdmin.chatExpiresIn = data.attributes.expires_in
+        chatAccessToken,
+        chatRefreshToken,
+        chatExpiresIn
+      } = await this.chatUserLogin(chatUserName, chatUserPassword)
+      chatAdmin.chatAccessToken = chatAccessToken
+      chatAdmin.chatRefreshToken = chatRefreshToken
+      chatAdmin.chatExpiresIn = chatExpiresIn
       this.chatAdminRepo.save(chatAdmin)
     }
     return chatAdmin
   }
 
   private async getUserByUserId(userId: string): Promise<User> {
-    const CHAT_API_PATH = this.configService.get<string>('CHAT_API_PATH')
     let user = await this.userRepo.findOne({
       where: {
         userId
       }
     })
-
     if (!user) {
-      const url = `${CHAT_API_PATH}/register`
-      const chatAdmin = await this.getChatAdmin()
-      const authorization = `Bearer ${chatAdmin.chatAccessToken}`
       let chatUserName: string
       for (let i = 0; i + 15 <= 64; i++) {
         chatUserName = createHmac('sha256', userId)
@@ -124,49 +204,12 @@ export class UserService {
         .slice(0, 16)
       const chatLastLoginTime = new Date()
       const {
-        data: { data }
-      } = await this.httpService
-        .post(
-          url,
-          {
-            data: {
-              type: 'users',
-              attributes: {
-                username: chatUserName,
-                password: chatUserPassword,
-                register_reason: 'SCU URP Assistant'
-              }
-            }
-          },
-          {
-            headers: {
-              Authorization: authorization
-            }
-          }
-        )
-        .toPromise()
-      const chatUserId = Number(data.id)
-      const chatAccessToken = data.attributes.access_token
-      const chatRefreshToken = data.attributes.refresh_token
-      const chatExpiresIn = data.attributes.expires_in
-      const changeUserGroupUrl = `${CHAT_API_PATH}/users/${chatUserId}`
-      await this.httpService
-        .patch(
-          changeUserGroupUrl,
-          {
-            data: {
-              attributes: {
-                groupId: 11
-              }
-            }
-          },
-          {
-            headers: {
-              Authorization: authorization
-            }
-          }
-        )
-        .toPromise()
+        chatUserId,
+        chatAccessToken,
+        chatRefreshToken,
+        chatExpiresIn
+      } = await this.chatUserRegister(chatUserName, chatUserPassword)
+      await this.chatUserChangeGroup(chatUserId)
       user = await this.userRepo.save({
         role: UserRoleType.NORMAL_USER,
         userId: userId,
@@ -184,24 +227,15 @@ export class UserService {
     )
     const isExpired = new Date().getTime() >= expiresTime.getTime()
     if (isExpired) {
-      const url = `${CHAT_API_PATH}/refresh-token`
       user.chatLastLoginTime = new Date()
       const {
-        data: { data }
-      } = await this.httpService
-        .post(url, {
-          data: {
-            attributes: {
-              grant_type: 'refresh_token',
-              refresh_token: user.chatRefreshToken,
-              client_id: user.chatUserId
-            }
-          }
-        })
-        .toPromise()
-      user.chatAccessToken = data.attributes.access_token
-      user.chatRefreshToken = data.attributes.refresh_token
-      user.chatExpiresIn = data.attributes.expires_in
+        chatAccessToken,
+        chatRefreshToken,
+        chatExpiresIn
+      } = await this.chatUserLogin(user.chatUserName, user.chatUserPassword)
+      user.chatAccessToken = chatAccessToken
+      user.chatRefreshToken = chatRefreshToken
+      user.chatExpiresIn = chatExpiresIn
       this.userRepo.save(user)
     }
     return user
