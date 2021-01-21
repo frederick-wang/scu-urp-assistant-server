@@ -5,7 +5,9 @@ export class TrainingScheme {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   majorId: number
 
   @Column({
@@ -13,7 +15,9 @@ export class TrainingScheme {
   })
   majorName: string
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   grade: string
 
   @Column({
